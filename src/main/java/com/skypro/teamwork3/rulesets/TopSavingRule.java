@@ -17,14 +17,14 @@ public class TopSavingRule implements RecommendationRuleSet {
 
     @Override
     public Optional<Recommendation> getRecommendation(String userId) {
-        boolean hasDebit = userRepository.getProductTypes(userId).contains("DEBIT");
-        double debitDeposits = userRepository.getProductBalances(userId).getOrDefault("DEBIT", 0.0);
-        double savingDeposits = userRepository.getProductBalances(userId).getOrDefault("SAVING", 0.0);
-        double debitExpenses = userRepository.getProductExpenses(userId).getOrDefault("DEBIT", 0.0);
+        boolean hasDebit = userRepository.hasProductOfType(userId, "DEBIT");
+        double savingDeposits = userRepository.getTotalDepositByType(userId, "SAVING");
+        double debitWithdrawals = userRepository.getTotalWithdrawalByType(userId, "DEBIT");
+        double debitDeposits = userRepository.getTotalDepositByType(userId, "DEBIT");
 
         if (hasDebit &&
                 (debitDeposits >= 50_000 || savingDeposits >= 50_000)
-                && debitDeposits > debitExpenses) {
+                && debitDeposits > debitWithdrawals) {
             return Optional.of(new Recommendation(
                     "59efc529-2fff-41af-baff-90ccd7402925",
                     "Top saving",
@@ -39,3 +39,6 @@ public class TopSavingRule implements RecommendationRuleSet {
         return Optional.empty();
     }
 }
+
+
+

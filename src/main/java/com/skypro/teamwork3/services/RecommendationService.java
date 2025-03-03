@@ -4,8 +4,7 @@ import com.skypro.teamwork3.model.Recommendation;
 import com.skypro.teamwork3.rulesets.RecommendationRuleSet;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,4 +22,16 @@ public class RecommendationService{
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
+//    public Map<String, Object> getRecommendations(String userId) {
+//        List<Recommendation> recommendations = new ArrayList<>();
+//        for (RecommendationRuleSet ruleSet : ruleSets) {
+//            Optional<Recommendation> recommendation = ruleSet.getRecommendation(userId);
+//        }
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("user_id", userId);
+//        response.put("recommendations", recommendations);
+//        return response;
+//
+//    }
+
 }

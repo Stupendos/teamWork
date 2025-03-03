@@ -21,11 +21,11 @@ public class Invest500 implements RecommendationRuleSet {
 
     @Override
     public Optional<Recommendation> getRecommendation(String userId) {
-        boolean hasDebit = userRepository.getProductTypes(userId).contains("DEBIT");
-        boolean noInvest = !userRepository.getProductTypes(userId).contains("INVEST");
-        double savingDeposits = userRepository.getProductBalances(userId).getOrDefault("SAVING", 0.0);
+        boolean hasDebit = userRepository.hasProductOfType(userId,"DEBIT");
+        boolean hasNoInvest = !userRepository.hasProductOfType(userId,"INVEST");
+        double savingDeposits = userRepository.getTotalDepositByType(userId,"SAVING");
 
-        if (hasDebit && noInvest && savingDeposits > 1000) {
+        if (hasDebit && hasNoInvest && savingDeposits > 1000) {
             return Optional.of(new Recommendation(
                     "147f6a0f-3b91-413b-ab99-87f081d60d5a",
                     "Invest500",

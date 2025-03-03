@@ -16,11 +16,11 @@ public class SimpleCreditRule implements RecommendationRuleSet {
 
     @Override
     public Optional<Recommendation> getRecommendation(String userId) {
-        boolean noCredit = !userRepository.getProductTypes(userId).contains("CREDIT");
-        double debitDeposits = userRepository.getProductBalances(userId).getOrDefault("DEBIT", 0.0);
-        double debitExpenses = userRepository.getProductExpenses(userId).getOrDefault("DEBIT", 0.0);
+        boolean hasNoCredit = !userRepository.hasProductOfType(userId, "CREDIT");
+        double debitDeposits = userRepository.getTotalDepositByType(userId,"DEBIT");
+        double debitWithdrawals = userRepository.getTotalWithdrawalByType(userId,"DEBIT");
 
-        if (noCredit && debitDeposits > debitExpenses && debitExpenses > 100_000) {
+        if (hasNoCredit && debitDeposits > debitWithdrawals && debitWithdrawals > 100_000) {
             return Optional.of(new Recommendation(
                     "ab138afb-f3ba-4a93-b74f-0fcee86d447f",
                     "Простой кредит",
