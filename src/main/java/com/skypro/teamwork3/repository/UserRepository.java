@@ -3,9 +3,6 @@ package com.skypro.teamwork3.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Repository
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -17,48 +14,32 @@ public class UserRepository {
     public boolean hasProductOfType(String userId, String type) {
         String query = """
                     SELECT EXISTS (
-                        SELECT 1 
-                        FROM TRANSACTIONS 
-                        WHERE USER_ID = ? AND TYPE = ?
+                        SELECT 1
+                        FROM TRANSACTIONS t
+                        JOIN PRODUCTS p ON t.PRODUCT_ID = p.ID
+                        WHERE t.USER_ID = ? AND p.TYPE = ?
                     )
                 """;
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, new Object[]{userId, type}, Boolean.class));
     }
 
-        public double getTotalDepositByType (String userId, String type){
-            String query = """
-                        SELECT COALESCE(SUM(AMOUNT), 0) 
-                        FROM TRANSACTIONS 
-                        WHERE USER_ID = ? AND TYPE = ?
-                    """;
-            return jdbcTemplate.queryForObject(query, new Object[]{userId, type}, Double.class);
-        }
-
-    public double getTotalWithdrawalByType(String userId, String type) {
+    public double getTotalDepositByType(String userId, String productType) {
         String query = """
-            SELECT COALESCE(SUM(AMOUNT), 0) 
-            FROM TRANSACTIONS 
-            WHERE USER_ID = ? AND TYPE = ?
-        """;
-        return jdbcTemplate.queryForObject(query, new Object[]{userId, type}, Double.class);
+                    SELECT COALESCE(SUM(t.AMOUNT), 0)
+                    FROM TRANSACTIONS t
+                    JOIN PRODUCTS p ON t.PRODUCT_ID = p.ID
+                    WHERE t.USER_ID = ? AND t.TYPE = 'DEPOSIT' AND p.TYPE = ?
+                """;
+        return jdbcTemplate.queryForObject(query, new Object[]{userId, productType}, Double.class);
     }
 
-//
-        public Map<String, Double> getProductExpenses (String userId){
-            String query = """
-                        SELECT TYPE, SUM(AMOUNT) AS TOTAL_AMOUNT 
-                        FROM TRANSACTIONS 
-                        WHERE USER_ID = ? 
-                        AND TYPE = 'WITHDRAW' 
-                        GROUP BY TYPE
-                    """;
-
-            return jdbcTemplate.query(query, new Object[]{userId}, rs -> {
-                Map<String, Double> map = new HashMap<>();
-                while (rs.next()) {
-                    map.put(rs.getString("TYPE"), rs.getDouble("TOTAL_AMOUNT"));
-                }
-                return map;
-            });
-        }
+    public double getTotalWithdraw(String userId, String productType) {
+        String query = """
+                    SELECT COALESCE(SUM(t.AMOUNT), 0)
+                    FROM TRANSACTIONS t
+                    JOIN PRODUCTS p ON t.PRODUCT_ID = p.ID
+                    WHERE t.USER_ID = ? AND t.TYPE = 'WITHDRAW' AND p.TYPE = ?
+                """;
+        return jdbcTemplate.queryForObject(query, new Object[]{userId, productType}, Double.class);
     }
+}

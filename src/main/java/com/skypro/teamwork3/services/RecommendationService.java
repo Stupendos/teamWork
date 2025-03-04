@@ -22,16 +22,4 @@ public class RecommendationService{
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
-//    public Map<String, Object> getRecommendations(String userId) {
-//        List<Recommendation> recommendations = new ArrayList<>();
-//        for (RecommendationRuleSet ruleSet : ruleSets) {
-//            Optional<Recommendation> recommendation = ruleSet.getRecommendation(userId);
-//        }
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("user_id", userId);
-//        response.put("recommendations", recommendations);
-//        return response;
-//
-//    }
-
 }

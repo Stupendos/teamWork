@@ -19,7 +19,7 @@ public class TopSavingRule implements RecommendationRuleSet {
     public Optional<Recommendation> getRecommendation(String userId) {
         boolean hasDebit = userRepository.hasProductOfType(userId, "DEBIT");
         double savingDeposits = userRepository.getTotalDepositByType(userId, "SAVING");
-        double debitWithdrawals = userRepository.getTotalWithdrawalByType(userId, "DEBIT");
+        double debitWithdrawals = userRepository.getTotalWithdraw(userId, "DEBIT");
         double debitDeposits = userRepository.getTotalDepositByType(userId, "DEBIT");
 
         if (hasDebit &&

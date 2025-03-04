@@ -18,7 +18,7 @@ public class SimpleCreditRule implements RecommendationRuleSet {
     public Optional<Recommendation> getRecommendation(String userId) {
         boolean hasNoCredit = !userRepository.hasProductOfType(userId, "CREDIT");
         double debitDeposits = userRepository.getTotalDepositByType(userId,"DEBIT");
-        double debitWithdrawals = userRepository.getTotalWithdrawalByType(userId,"DEBIT");
+        double debitWithdrawals = userRepository.getTotalWithdraw(userId,"DEBIT");
 
         if (hasNoCredit && debitDeposits > debitWithdrawals && debitWithdrawals > 100_000) {
             return Optional.of(new Recommendation(
