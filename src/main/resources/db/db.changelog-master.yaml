@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Stupendos
+      changes:
+        - createTable:
+            tableName: DynamicRule
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: query
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: arguments
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: negate
+                  type: BOOLEAN
+                  defaultValue: false

@@ -1,4 +1,4 @@
-package com.skypro.teamwork3.repository;
+package com.skypro.teamwork3.jdbc.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

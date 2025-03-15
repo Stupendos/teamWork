@@ -1,7 +1,7 @@
 package com.skypro.teamwork3.rulesets;
 
 import com.skypro.teamwork3.model.Recommendation;
-import com.skypro.teamwork3.repository.UserRepository;
+import com.skypro.teamwork3.jdbc.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -29,9 +29,6 @@ public class Invest500 implements RecommendationRuleSet {
             ));
 
         }
-        System.out.println("hasDebit: " + hasDebit);
-        System.out.println("hasNoInvest: " + hasNoInvest);
-        System.out.println("savingDeposits: " + savingDeposits);
         return Optional.empty();
     }
 }
