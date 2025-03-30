@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Stupendos
+      changes:
+        - createTable:
+            tableName: recommendation
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: recommendation_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recommendation_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recommendation_text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: Stupendos
+      changes:
+        - createTable:
+            tableName: dynamic_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: query
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: arguments
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: negate
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recommendation_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: dynamic_rule
+            baseColumnNames: recommendation_id
+            referencedTableName: recommendation
+            referencedColumnNames: recommendation_id
+            constraintName: fk_dynamic_rule_recommendation
+            onDelete: CASCADE

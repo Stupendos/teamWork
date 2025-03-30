@@ -1,10 +1,9 @@
 package com.skypro.teamwork3.rulesets;
 
-import com.skypro.teamwork3.model.Recommendation;
-import com.skypro.teamwork3.model.UserTransactionData;
+import com.skypro.teamwork3.dto.RecommendationDTO;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface RecommendationRuleSet {
-    Optional<Recommendation> getRecommendation(String userId);
+    List<RecommendationDTO> getRecommendation(String userId);
 }

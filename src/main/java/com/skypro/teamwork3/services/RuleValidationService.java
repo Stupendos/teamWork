@@ -1,88 +1,79 @@
 package com.skypro.teamwork3.services;
 
+import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.model.DynamicRule;
 import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RuleValidationService {
-    private final DynamicRuleRepository dynamicRuleRepository;
+    private final RecommendationRepository recommendationRepository;
 
-    public RuleValidationService(DynamicRuleRepository dynamicRuleRepository) {
-        this.dynamicRuleRepository = dynamicRuleRepository;
+    public RuleValidationService(RecommendationRepository recommendationRepository) {
+        this.recommendationRepository = recommendationRepository;
     }
 
-    private boolean checkUserOf(String userId, DynamicRule dynamicRule) {
-        String productType = dynamicRule.getArguments().get(0);
-        boolean negate = dynamicRule.isNegate();
-
-        boolean hasTransactions = dynamicRuleRepository.existsByUserIdAndProductType(userId, productType);
-        return negate ? !hasTransactions : hasTransactions;
+    public boolean evaluateForQuery(DynamicRule dynamicRule, String userId) {
+        return switch (dynamicRule.getQuery()) {
+            case USER_OF -> evaluateUserOfRule(userId, dynamicRule.getArguments().get(0), dynamicRule.isNegate());
+            case ACTIVE_USER_OF ->
+                    evaluateActiveUserOfRule(userId, dynamicRule.getArguments().get(0), dynamicRule.isNegate());
+            case TRANSACTION_SUM_COMPARE -> evaluateTransactionSumCompareRule(userId,
+                    dynamicRule.getArguments().get(0),
+                    dynamicRule.getArguments().get(1),
+                    dynamicRule.getArguments().get(2),
+                    Integer.valueOf(dynamicRule.getArguments().get(3)),
+                    dynamicRule.isNegate()
+            );
+            case TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW -> evaluateTransactionSumCompareDepositWithdrawRule(
+                    userId,
+                    dynamicRule.getArguments().get(0),
+                    dynamicRule.getArguments().get(1),
+                    dynamicRule.isNegate()
+            );
+        };
     }
 
-    private boolean checkActiveUserOf(String userId, DynamicRule dynamicRule) {
-        String productType = dynamicRule.getArguments().get(0);
-        boolean negate = dynamicRule.isNegate();
-        int transactionCount = dynamicRuleRepository.countByUserIdAndProductType(userId, productType);
-        boolean isActive = transactionCount > 5;
-
-        return negate ? !isActive : isActive;
+    public boolean evaluateUserOfRule(String userId, String productType, boolean negate) {
+        boolean result = recommendationRepository.hasProductOfType(userId, productType);
+        return negate ? !result : result;
     }
 
-    private boolean checkTransactionSumCompare(String userId, DynamicRule dynamicRule) {
-        String productType = dynamicRule.getArguments().get(0);
-        String transactionType = dynamicRule.getArguments().get(1);
-        String operator = dynamicRule.getArguments().get(2);
-        int treshold = Integer.parseInt(dynamicRule.getArguments().get(3));
-        boolean negate = dynamicRule.isNegate();
-
-        int transactionSum = dynamicRuleRepository.sumByUserIdAndProdyctTypeAndTransactionType(userId, productType, transactionType);
-
-        boolean comparisonResult = compare(transactionSum, operator, treshold);
-        return negate ? !comparisonResult : comparisonResult;
+    public boolean evaluateActiveUserOfRule(String userId, String productType, boolean negate) {
+        int transactionCount = recommendationRepository.amountOfTransactions(userId, productType);
+        boolean result = transactionCount >= 5;
+        return negate ? !result : result;
     }
 
-    private boolean compare(int value, String operator, int threshold) {
-        switch (operator) {
-            case ">":
-                return value > threshold;
-            case "<":
-                return value < threshold;
-            case "=":
-                return value == threshold;
-            case ">=":
-                return value >= threshold;
-            case "<=":
-                return value <= threshold;
-            default:
-                throw new IllegalArgumentException("Unknown operator: " + operator);
-        }
+    public boolean evaluateTransactionSumCompareRule(
+            String userId, String productType, String transactionType, String operator, Integer value, boolean negate) {
+        double totalSum = recommendationRepository.getTotalDepositByType(userId, transactionType, productType);
+
+        boolean result = switch (operator) {
+            case ">" -> totalSum > value;
+            case "<" -> totalSum < value;
+            case "=" -> totalSum == value;
+            case ">=" -> totalSum >= value;
+            case "<=" -> totalSum <= value;
+            default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
+        };
+        return negate ? !result : result;
     }
 
-    private boolean checkTransactionSumCompareDepositWithdraw(String userId, DynamicRule dynamicRule) {
-        String productType = dynamicRule.getArguments().get(0);
-        String operator = dynamicRule.getArguments().get(1);
-        boolean negate = dynamicRule.isNegate();
+    public boolean evaluateTransactionSumCompareDepositWithdrawRule(
+            String userId, String productType, String operator, boolean negate) {
+        double totalDeposit = recommendationRepository.getTotalDepositByType(userId, "DEPOSIT", productType);
+        double totalWithdraw = recommendationRepository.getTotalDepositByType(userId, "WITHDRAW", productType);
 
-        int depositSum = dynamicRuleRepository.sumByUserIdAndProdyctTypeAndTransactionType(userId, productType, "DEPOSIT");
-        int withdrawSum = dynamicRuleRepository.sumByUserIdAndProdyctTypeAndTransactionType(userId, productType, "WITHDRAW");
+        boolean result = switch (operator) {
+            case ">" -> totalDeposit > totalWithdraw;
+            case "<" -> totalDeposit < totalWithdraw;
+            case "=" -> totalDeposit == totalWithdraw;
+            case ">=" -> totalDeposit >= totalWithdraw;
+            case "<=" -> totalDeposit <= totalWithdraw;
+            default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
+        };
 
-        boolean comparisonResult = compare(depositSum - withdrawSum, operator, 0);
-        return negate ? !comparisonResult : comparisonResult;
-    }
-
-    public boolean validateRule(String userId, DynamicRule dynamicRule) {
-        switch (dynamicRule.getQuery()) {
-            case "USER_OF":
-                return checkUserOf(userId, dynamicRule);
-            case "ACTIVE_USER_OF":
-                return checkActiveUserOf(userId, dynamicRule);
-            case "TRANSACTION_SUM_COMPARE":
-                return checkTransactionSumCompare(userId, dynamicRule);
-            case "TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW":
-                return checkTransactionSumCompareDepositWithdraw(userId, dynamicRule);
-            default:
-                throw new IllegalArgumentException("Unknown query: " + dynamicRule.getQuery());
-        }
+        return negate ? !result : result;
     }
 }

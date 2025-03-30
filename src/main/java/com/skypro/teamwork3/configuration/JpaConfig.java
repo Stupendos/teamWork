@@ -1,6 +1,7 @@
 package com.skypro.teamwork3.configuration;
 
-import com.skypro.teamwork3.jdbc.repository.RecommendationsRepository;
+import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
+import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -16,12 +17,8 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.skypro.teamwork3.jpa.repository",
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = RecommendationsRepository.class
-        ),
-        entityManagerFactoryRef = "entityManagerFactory",
-        transactionManagerRef = "transactionManager"
+        entityManagerFactoryRef = "jpaEntityManagerFactory",
+        transactionManagerRef = "jpaTransactionManager"
 )
 public class JpaConfig {
 
@@ -32,7 +29,7 @@ public class JpaConfig {
     }
 
     @Primary
-    @Bean(name = "entityManagerFactory")
+    @Bean(name = "jpaEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("defaultDataSource") DataSource dataSource) {
@@ -44,9 +41,9 @@ public class JpaConfig {
     }
 
     @Primary
-    @Bean(name = "transactionManager")
+    @Bean(name = "jpaTransactionManager")
     public PlatformTransactionManager transactionManager(
-            @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
+            @Qualifier("jpaEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
 }

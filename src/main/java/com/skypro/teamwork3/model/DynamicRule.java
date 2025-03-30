@@ -1,5 +1,6 @@
 package com.skypro.teamwork3.model;
 
+import com.skypro.teamwork3.dto.RecommendationDTO;
 import jakarta.persistence.*;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -12,27 +13,23 @@ public class DynamicRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String query;
+    private QueryType query;
 
     @ElementCollection
     @CollectionTable(name = "rule_arguments", joinColumns = @JoinColumn(name = "rule_id"))
-    @Column(name = "argument")
     private List<String> arguments;
 
     @Column(name = "negate", nullable = false)
     boolean negate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recommendation_id", nullable = false)
-    private RecommendationByRules recommendationByRules;
+    @JoinColumn(name = "recommendation_id", nullable = true)
+    private Recommendation recommendation;
 
-    public RecommendationByRules getRecommendationByRules() {
-        return recommendationByRules;
-    }
+    public DynamicRule() {
 
-    public void setRecommendation(RecommendationByRules recommendationByRules) {
-        this.recommendationByRules = recommendationByRules;
     }
 
     public Long getId() {
@@ -43,11 +40,11 @@ public class DynamicRule {
         this.id = id;
     }
 
-    public String getQuery() {
+    public QueryType getQuery() {
         return query;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(QueryType query) {
         this.query = query;
     }
 
@@ -65,5 +62,24 @@ public class DynamicRule {
 
     public void setNegate(boolean negate) {
         this.negate = negate;
+    }
+
+    public Recommendation getRecommendation() {
+        return recommendation;
+    }
+
+    public void setRecommendation(Recommendation recommendation) {
+        this.recommendation = recommendation;
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicRule{" +
+                "id=" + id +
+                ", query=" + query +
+                ", arguments=" + arguments +
+                ", negate=" + negate +
+                ", recommendation=" + recommendation +
+                '}';
     }
 }
