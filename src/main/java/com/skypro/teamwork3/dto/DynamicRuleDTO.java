@@ -1,21 +1,28 @@
 package com.skypro.teamwork3.dto;
 
-
 import com.skypro.teamwork3.model.QueryType;
 
 import java.util.List;
 
 public class DynamicRuleDTO {
-    private String query;
+    private QueryType query;
     private List<String> arguments;
     private boolean negate;
-    private String recommendationId;
 
-    public QueryType getQuery() {
-        return QueryType.valueOf(query);
+    public DynamicRuleDTO() {
     }
 
-    public void setQuery(String query) {
+    public DynamicRuleDTO(QueryType query, List<String> arguments, boolean negate) {
+        this.query = query;
+        this.arguments = arguments;
+        this.negate = negate;
+    }
+
+    public QueryType getQuery() {
+        return query;
+    }
+
+    public void setQuery(QueryType query) {
         this.query = query;
     }
 
@@ -35,11 +42,12 @@ public class DynamicRuleDTO {
         this.negate = negate;
     }
 
-    public String getRecommendationId() {
-        return recommendationId;
-    }
-
-    public void setRecommendationId(String recommendationId) {
-        this.recommendationId = recommendationId;
+    @Override
+    public String toString() {
+        return "DynamicRuleDTO{" +
+                "query=" + query +
+                ", arguments=" + arguments +
+                ", negate=" + negate +
+                '}';
     }
 }

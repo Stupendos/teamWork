@@ -1,6 +1,8 @@
 package com.skypro.teamwork3.model;
 
-import com.skypro.teamwork3.dto.RecommendationDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -17,19 +19,25 @@ public class DynamicRule {
     @Column(nullable = false)
     private QueryType query;
 
-    @ElementCollection
-    @CollectionTable(name = "rule_arguments", joinColumns = @JoinColumn(name = "rule_id"))
     private List<String> arguments;
 
     @Column(name = "negate", nullable = false)
     boolean negate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recommendation_id", nullable = true)
+    @JoinColumn(name = "recommendation_id", nullable = false)
+    @JsonBackReference
+    @JsonIgnore
     private Recommendation recommendation;
 
-    public DynamicRule() {
+    @JsonCreator
+    public DynamicRule(QueryType query, List<String> arguments, boolean negate) {
+        this.query = query;
+        this.arguments = arguments;
+        this.negate = negate;
+    }
 
+    public DynamicRule() {
     }
 
     public Long getId() {
@@ -79,7 +87,6 @@ public class DynamicRule {
                 ", query=" + query +
                 ", arguments=" + arguments +
                 ", negate=" + negate +
-                ", recommendation=" + recommendation +
                 '}';
     }
 }

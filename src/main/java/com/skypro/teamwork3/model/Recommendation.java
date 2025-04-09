@@ -2,9 +2,7 @@ package com.skypro.teamwork3.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "recommendation")
@@ -15,7 +13,7 @@ public class Recommendation {
     private Long id;
 
     @Column(name = "recommendation_id", nullable = false)
-    private UUID recommendationId;
+    private String recommendationId;
 
     @Column(name = "recommendation_name", nullable = false)
     private String name;
@@ -24,19 +22,28 @@ public class Recommendation {
     private String text;
 
     @OneToMany(mappedBy = "recommendation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DynamicRule> dynamicRules = new ArrayList<>();
+    private List<DynamicRule> dynamicRules;
 
-    public Recommendation(UUID recommendationId, String name, String text) {
+
+    public Recommendation(String recommendationId, String name, String text, List<DynamicRule> dynamicRules) {
         this.recommendationId = recommendationId;
         this.name = name;
         this.text = text;
+        this.dynamicRules = dynamicRules;
     }
 
     public Recommendation() {
-
     }
 
-    public UUID getRecommendationId() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRecommendationId() {
         return recommendationId;
     }
 
@@ -52,7 +59,7 @@ public class Recommendation {
         return dynamicRules;
     }
 
-    public void setRecommendationId(UUID recommendationId) {
+    public void setRecommendationId(String recommendationId) {
         this.recommendationId = recommendationId;
     }
 
@@ -66,6 +73,11 @@ public class Recommendation {
 
     public void setDynamicRules(List<DynamicRule> dynamicRules) {
         this.dynamicRules = dynamicRules;
+        if (dynamicRules != null) {
+            for (DynamicRule dynamicRule : dynamicRules) {
+                dynamicRule.setRecommendation(this);
+            }
+        }
     }
 
     @Override

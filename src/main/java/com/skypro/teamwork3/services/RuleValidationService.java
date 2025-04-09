@@ -2,7 +2,6 @@ package com.skypro.teamwork3.services;
 
 import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.model.DynamicRule;
-import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import org.springframework.stereotype.Service;
 
 @Service

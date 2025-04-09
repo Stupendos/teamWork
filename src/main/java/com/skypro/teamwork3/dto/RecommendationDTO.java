@@ -1,31 +1,29 @@
 package com.skypro.teamwork3.dto;
 
-import com.skypro.teamwork3.model.DynamicRule;
-
 import java.util.List;
-import java.util.UUID;
 
 public class RecommendationDTO {
-    private UUID id;
+    private String recommendationId;
     private String name;
     private String description;
-    private List<DynamicRule> dynamicRules; ;
+    private List<DynamicRuleDTO> dynamicRules;
 
-    public RecommendationDTO(UUID id, String name, String description) {
-        this.id = id;
+    public RecommendationDTO(String recommendationId, String name, String text, List<DynamicRuleDTO> dynamicRules) {
+        this.recommendationId = recommendationId;
         this.name = name;
-        this.description = description;
+        this.description = text;
+        this.dynamicRules = dynamicRules;
     }
 
     public RecommendationDTO() {
     }
 
-    public UUID getId() {
-        return id;
+    public String getRecommendationId() {
+        return recommendationId;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setRecommendationId(String recommendationId) {
+        this.recommendationId = recommendationId;
     }
 
     public String getName() {
@@ -44,11 +42,11 @@ public class RecommendationDTO {
         this.description = description;
     }
 
-    public List<DynamicRule> getDynamicRules() {
+    public List<DynamicRuleDTO> getDynamicRules() {
         return dynamicRules;
     }
 
-    public void setDynamicRules(List<DynamicRule> dynamicRules) {
+    public void setDynamicRules(List<DynamicRuleDTO> dynamicRules) {
         this.dynamicRules = dynamicRules;
     }
 }
