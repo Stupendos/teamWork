@@ -39,7 +39,6 @@ public class DynamicRuleSet implements RecommendationRuleSet {
         if (isValid) {
             return Optional.of(toDTO(recommendation));
         } else {
-
             return Optional.empty();
         }
     }
