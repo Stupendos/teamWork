@@ -42,4 +42,17 @@ public class RecommendationRepository {
         Integer count = jdbcTemplate.queryForObject(query, new Object[]{userId, productType}, Integer.class);
         return count;
     }
+
+    public String getIdByUsername(String username) {
+        try {
+            String query = """
+                    SELECT ID
+                    FROM USERS
+                    WHERE USERNAME = ?
+                    """;
+            return jdbcTemplate.queryForObject(query, new Object[]{username}, String.class);
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }
