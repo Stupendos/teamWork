@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.skypro.teamwork3.services.RecommendationService;
+import com.skypro.teamwork3.services.TelegramBotService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     TelegramBot telegramBot;
     @Autowired
-    RecommendationService recommendationService;
+    TelegramBotService botService;
 
     @PostConstruct
     public void init(){telegramBot.setUpdatesListener(this);}
@@ -61,7 +61,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         /*logger.info("attempting to fetch full name");
                         String userFullName = recommendationService.getFullName(username);*/
                         logger.info("attempting to find recommendations");
-                        SendMessage sendMessage = new SendMessage(chatId, recommendationService.getRecommendationsByUsername(username));
+                        SendMessage sendMessage = new SendMessage(chatId, botService.getRecommendationsByUsername(username));
                         telegramBot.execute(sendMessage);
                     } else {
                         logger.info("form is INCORRECT, sending automated response");

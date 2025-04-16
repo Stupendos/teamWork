@@ -1,11 +1,14 @@
 package com.skypro.teamwork3.services;
 
 import com.skypro.teamwork3.dto.*;
+import com.skypro.teamwork3.exceptions.NoRecommendationFound;
+import com.skypro.teamwork3.exceptions.UsernameDontExistException;
 import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import com.skypro.teamwork3.model.DynamicRule;
 import com.skypro.teamwork3.model.Recommendation;
+import com.skypro.teamwork3.model.User;
 import com.skypro.teamwork3.rulesets.DynamicRuleSet;
 import com.skypro.teamwork3.rulesets.RecommendationRuleSet;
 import jakarta.transaction.Transactional;
@@ -15,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class RecommendationService {
@@ -93,32 +95,38 @@ public class RecommendationService {
         }
     }
 
-    public String getRecommendationsByUsername(String username) {
+    public List<RecommendationDTO> getRecommendationsByUsername(String username) throws UsernameDontExistException, NoRecommendationFound {
         String userId = getUserIdByUsername(username);
         if (userId.isEmpty()) {
-            return "Пользователь не найден";
+            throw new UsernameDontExistException("User ID search by username failed.");
         }
-        List<RecommendationDTO> list = getRecommendations(userId);
-        if (list.isEmpty()) {
-            return "Похоже, что вы уже владеете всеми подходящими вам продуктами. Так держать!";
+        List<RecommendationDTO> recList = getRecommendations(userId);
+        if (recList.isEmpty()) {
+            throw new NoRecommendationFound("Search for recommendations for user " + username + " failed.");
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Здравствуйте чувырла фуллнейм поиск еще не настроен!" +
-                "\rПродукты для вас:\r\n");
-        for (RecommendationDTO dto : list) {
-            stringBuilder.append("———" + dto.getName() + "! ———\r\n");
-            stringBuilder.append(dto.getDescription() + "\r\n");
-        }
-        return stringBuilder.toString();
+        return recList;
     }
 
-    private String getUserIdByUsername(String username) {
-        logger.info("Fetching userId by username from the database.");
-        String userId = defaultRecommendationRepository.getIdByUsername(username);
-        if (userId.isEmpty()) {
-            logger.info("Пользователь не найден");
+    private String getUserIdByUsername(String username) throws UsernameDontExistException {
+        try {
+            logger.info("Fetching userId by username from the database.");
+            String userId = defaultRecommendationRepository.getIdByUsername(username);
+            return userId;
+        } catch (Exception e) {
+            logger.error("Пользователь не найден");
+            throw new UsernameDontExistException("ID search by username failed.");
         }
-        logger.info("UserId fetched: {}", userId);
-        return userId;
+    }
+
+    public String findFullNameByUsername(String username) throws UsernameDontExistException {
+        logger.info("Searching for full name...");
+        try {
+            User user = defaultRecommendationRepository.getAllByUsername(username);
+            return (user.getFirstName() + " " + user.getLastName());
+        } catch (Exception e) {
+            logger.error(e.getClass().toString());
+            logger.error(e.getMessage());
+            throw new UsernameDontExistException("User search by username failed.");
+        }
     }
 }
