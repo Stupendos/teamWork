@@ -1,12 +1,10 @@
-package com.skypro.teamwork3.repository;
+package com.skypro.teamwork3.jdbc.repository;
 
-import com.skypro.teamwork3.model.Product;
 import com.skypro.teamwork3.model.UserTransactionData;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Repository

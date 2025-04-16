@@ -1,4 +1,4 @@
-package com.skypro.teamwork3.repository;
+package com.skypro.teamwork3.jdbc.repository;
 
 import com.skypro.teamwork3.model.Product;
 import com.skypro.teamwork3.model.UserTransactionData;
