@@ -1,7 +1,14 @@
 package com.skypro.teamwork3.jdbc.repository;
 
+import com.skypro.teamwork3.exceptions.UsernameDontExistException;
+import com.skypro.teamwork3.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlRowSetResultSetExtractor;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.Types;
 
 @Repository
 public class RecommendationRepository {
@@ -41,5 +48,25 @@ public class RecommendationRepository {
                 """;
         Integer count = jdbcTemplate.queryForObject(query, new Object[]{userId, productType}, Integer.class);
         return count;
+    }
+
+    public String getIdByUsername(String username) {
+        String query = """
+                SELECT ID
+                FROM USERS
+                WHERE USERNAME = ?
+                """;
+        return jdbcTemplate.queryForObject(query, new Object[]{username}, String.class);
+    }
+
+    public User getAllByUsername(String username) {
+        String query = """
+                SELECT *
+                FROM USERS
+                WHERE USERNAME = ?
+                """;
+        SqlRowSet row = jdbcTemplate.queryForRowSet(query, username);
+        row.next(); //да, эта штука тут нужна, даже если ряд только один
+        return new User(row.getString("ID"), row.getString("USERNAME"), row.getString("FIRST_NAME"), row.getString("LAST_NAME"));
     }
 }

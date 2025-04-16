@@ -1,36 +1,47 @@
 package com.skypro.teamwork3.services;
 
 import com.skypro.teamwork3.dto.*;
+import com.skypro.teamwork3.exceptions.NoRecommendationFound;
+import com.skypro.teamwork3.exceptions.UsernameDontExistException;
+import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import com.skypro.teamwork3.model.DynamicRule;
 import com.skypro.teamwork3.model.Recommendation;
+import com.skypro.teamwork3.model.User;
 import com.skypro.teamwork3.rulesets.DynamicRuleSet;
 import com.skypro.teamwork3.rulesets.RecommendationRuleSet;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class RecommendationService {
+
     private final List<RecommendationRuleSet> ruleSets;
     private final DynamicRecommendationRepository dynamicRecommendationRepository;
     private final DynamicRuleSet dynamicRuleSet;
     private final DynamicRuleRepository dynamicRuleRepository;
+    private final RecommendationRepository defaultRecommendationRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
     public RecommendationService(List<RecommendationRuleSet> ruleSets,
                                  DynamicRecommendationRepository dynamicRecommendationRepository,
-                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository) {
+                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository, RecommendationRepository defaultRecommendationRepository) {
         this.ruleSets = ruleSets;
         this.dynamicRecommendationRepository = dynamicRecommendationRepository;
         this.dynamicRuleSet = dynamicRuleSet;
         this.dynamicRuleRepository = dynamicRuleRepository;
+        this.defaultRecommendationRepository = defaultRecommendationRepository;
     }
 
     public List<RecommendationDTO> getRecommendations(String userId) {
+        logger.info("Processing getRecommendations...");
         List<RecommendationDTO> recommendationDTOs = new ArrayList<>();
         for (RecommendationRuleSet ruleSet : ruleSets) {
             List<RecommendationDTO> ruleRecommendations = ruleSet.getRecommendation(userId);
@@ -81,6 +92,41 @@ public class RecommendationService {
             dynamicRecommendationRepository.delete(recommendation.get());
         } else {
             new RuntimeException("Recommendation with id " + id + " not found");
+        }
+    }
+
+    public List<RecommendationDTO> getRecommendationsByUsername(String username) throws UsernameDontExistException, NoRecommendationFound {
+        String userId = getUserIdByUsername(username);
+        if (userId.isEmpty()) {
+            throw new UsernameDontExistException("User ID search by username failed.");
+        }
+        List<RecommendationDTO> recList = getRecommendations(userId);
+        if (recList.isEmpty()) {
+            throw new NoRecommendationFound("Search for recommendations for user " + username + " failed.");
+        }
+        return recList;
+    }
+
+    private String getUserIdByUsername(String username) throws UsernameDontExistException {
+        try {
+            logger.info("Fetching userId by username from the database.");
+            String userId = defaultRecommendationRepository.getIdByUsername(username);
+            return userId;
+        } catch (Exception e) {
+            logger.error("Пользователь не найден");
+            throw new UsernameDontExistException("ID search by username failed.");
+        }
+    }
+
+    public String findFullNameByUsername(String username) throws UsernameDontExistException {
+        logger.info("Searching for full name...");
+        try {
+            User user = defaultRecommendationRepository.getAllByUsername(username);
+            return (user.getFirstName() + " " + user.getLastName());
+        } catch (Exception e) {
+            logger.error(e.getClass().toString());
+            logger.error(e.getMessage());
+            throw new UsernameDontExistException("User search by username failed.");
         }
     }
 }

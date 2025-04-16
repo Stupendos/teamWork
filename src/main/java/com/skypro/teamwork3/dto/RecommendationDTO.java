@@ -49,4 +49,14 @@ public class RecommendationDTO {
     public void setDynamicRules(List<DynamicRuleDTO> dynamicRules) {
         this.dynamicRules = dynamicRules;
     }
+
+    @Override
+    public String toString() {
+        return "RecommendationDTO{" +
+                "recommendationId='" + recommendationId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", dynamicRules=" + dynamicRules +
+                '}';
+    }
 }
