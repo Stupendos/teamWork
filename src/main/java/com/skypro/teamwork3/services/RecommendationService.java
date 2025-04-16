@@ -17,16 +17,14 @@ import java.util.*;
 public class RecommendationService {
     private final List<RecommendationRuleSet> ruleSets;
     private final DynamicRecommendationRepository dynamicRecommendationRepository;
-    private final DynamicRuleSet dynamicRuleSet;
     private final DynamicRuleRepository dynamicRuleRepository;
 
 
     public RecommendationService(List<RecommendationRuleSet> ruleSets,
                                  DynamicRecommendationRepository dynamicRecommendationRepository,
-                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository) {
+                                 DynamicRuleRepository dynamicRuleRepository) {
         this.ruleSets = ruleSets;
         this.dynamicRecommendationRepository = dynamicRecommendationRepository;
-        this.dynamicRuleSet = dynamicRuleSet;
         this.dynamicRuleRepository = dynamicRuleRepository;
     }
 
@@ -80,7 +78,7 @@ public class RecommendationService {
         if (recommendation.isPresent()) {
             dynamicRecommendationRepository.delete(recommendation.get());
         } else {
-            new RuntimeException("Recommendation with id " + id + " not found");
+            throw new  RuntimeException("Recommendation with id " + id + " not found");
         }
     }
 }
