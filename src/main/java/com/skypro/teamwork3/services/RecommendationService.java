@@ -6,7 +6,9 @@ import com.skypro.teamwork3.exceptions.UsernameDontExistException;
 import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
+import com.skypro.teamwork3.jpa.repository.DynamicRuleStatisticsRepository;
 import com.skypro.teamwork3.model.DynamicRule;
+import com.skypro.teamwork3.model.DynamicRuleStatistics;
 import com.skypro.teamwork3.model.Recommendation;
 import com.skypro.teamwork3.model.User;
 import com.skypro.teamwork3.rulesets.DynamicRuleSet;
@@ -27,17 +29,19 @@ public class RecommendationService {
     private final DynamicRuleSet dynamicRuleSet;
     private final DynamicRuleRepository dynamicRuleRepository;
     private final RecommendationRepository defaultRecommendationRepository;
+    private final DynamicRuleStatisticsRepository dynamicRuleStatisticsRepository;
 
     private final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
     public RecommendationService(List<RecommendationRuleSet> ruleSets,
                                  DynamicRecommendationRepository dynamicRecommendationRepository,
-                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository, RecommendationRepository defaultRecommendationRepository) {
+                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository, RecommendationRepository defaultRecommendationRepository, DynamicRuleStatisticsRepository dynamicRuleStatisticsRepository) {
         this.ruleSets = ruleSets;
         this.dynamicRecommendationRepository = dynamicRecommendationRepository;
         this.dynamicRuleSet = dynamicRuleSet;
         this.dynamicRuleRepository = dynamicRuleRepository;
         this.defaultRecommendationRepository = defaultRecommendationRepository;
+        this.dynamicRuleStatisticsRepository = dynamicRuleStatisticsRepository;
     }
 
     public List<RecommendationDTO> getRecommendations(String userId) {
@@ -60,6 +64,7 @@ public class RecommendationService {
         dynamicRecommendationRepository.save(recommendation);
 
         List<DynamicRule> dynamicRules = new ArrayList<>();
+        List<DynamicRuleStatistics> statisticsList = new ArrayList<>();
         for (DynamicRuleDTO dynamicRuleDTO : recommendationDTO.getDynamicRules()) {
             DynamicRule dynamicRule = new DynamicRule();
             dynamicRule.setQuery(dynamicRuleDTO.getQuery());
@@ -68,10 +73,13 @@ public class RecommendationService {
 
             dynamicRule.setRecommendation(recommendation);
 
-            dynamicRules.add(dynamicRule);
+            DynamicRuleStatistics statistics = new DynamicRuleStatistics(dynamicRule);
 
+            dynamicRules.add(dynamicRule);
+            statisticsList.add(statistics);
         }
         dynamicRuleRepository.saveAll(dynamicRules);
+        dynamicRuleStatisticsRepository.saveAll(statisticsList);
         recommendation.setDynamicRules(dynamicRules);
         return recommendation;
     }
