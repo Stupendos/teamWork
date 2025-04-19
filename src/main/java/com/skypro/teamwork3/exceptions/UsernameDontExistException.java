@@ -1,6 +1,6 @@
 package com.skypro.teamwork3.exceptions;
 
-public class UsernameDontExistException extends Exception{
+public class UsernameDontExistException extends Exception {
     public UsernameDontExistException() {
     }
 

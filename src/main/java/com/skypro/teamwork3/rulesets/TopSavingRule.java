@@ -15,12 +15,11 @@ public class TopSavingRule implements RecommendationRuleSet {
         this.recommendationRepository = recommendationRepository;
     }
 
-
     @Override
     public List<RecommendationDTO> getRecommendation(String userId) {
         boolean hasDebit = recommendationRepository.hasProductOfType(userId, "DEBIT");
         double savingDeposits = recommendationRepository.getTotalDepositByType(userId, "DEPOSIT", "SAVING");
-        double debitWithdrawals = recommendationRepository.getTotalDepositByType(userId, "WITHDRAW","DEBIT");
+        double debitWithdrawals = recommendationRepository.getTotalDepositByType(userId, "WITHDRAW", "DEBIT");
         double debitDeposits = recommendationRepository.getTotalDepositByType(userId, "DEPOSIT", "DEBIT");
 
         if (hasDebit &&

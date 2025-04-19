@@ -24,6 +24,10 @@ public class DynamicRule {
     @Column(name = "negate", nullable = false)
     boolean negate;
 
+    @OneToOne(mappedBy = "rule", orphanRemoval = true)
+    @JsonIgnore
+    private DynamicRuleStatistics ruleStatistics;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recommendation_id", nullable = false)
     @JsonBackReference
@@ -70,6 +74,14 @@ public class DynamicRule {
 
     public void setNegate(boolean negate) {
         this.negate = negate;
+    }
+
+    public DynamicRuleStatistics getRuleStatistics() {
+        return ruleStatistics;
+    }
+
+    public void setRuleStatistics(DynamicRuleStatistics ruleStatistics) {
+        this.ruleStatistics = ruleStatistics;
     }
 
     public Recommendation getRecommendation() {
