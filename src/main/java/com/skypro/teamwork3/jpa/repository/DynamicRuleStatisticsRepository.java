@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DynamicRuleStatisticsRepository extends JpaRepository<DynamicRuleStatistics, Long> {
+    DynamicRuleStatistics findByRuleId(Long ruleId);
 }

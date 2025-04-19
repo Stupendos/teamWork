@@ -1,7 +1,7 @@
 package com.skypro.teamwork3.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.skypro.teamwork3.dto.StatisticsListElement;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,9 +21,18 @@ public class DynamicRuleStatistics {
     public DynamicRuleStatistics() {
     }
 
-    @JsonCreator
     public DynamicRuleStatistics(DynamicRule rule) {
         this.rule = rule;
+    }
+
+    public DynamicRuleStatistics(long id, DynamicRule rule, int triggerCount) {
+        this.id = id;
+        this.rule = rule;
+        this.triggerCount = triggerCount;
+    }
+
+    public StatisticsListElement getDTO() {
+        return new StatisticsListElement(this.rule.getId(), this.triggerCount);
     }
 
     public long getId() {

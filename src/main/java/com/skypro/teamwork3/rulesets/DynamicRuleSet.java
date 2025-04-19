@@ -6,6 +6,8 @@ import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
 import com.skypro.teamwork3.model.Recommendation;
 import com.skypro.teamwork3.services.RuleValidationService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class DynamicRuleSet implements RecommendationRuleSet {
     private final RuleValidationService ruleValidationService;
     private final DynamicRecommendationRepository dynamicRecommendationRepository;
+    private final Logger logger = LoggerFactory.getLogger(DynamicRuleSet.class);
 
     public DynamicRuleSet(RuleValidationService ruleValidationService, DynamicRecommendationRepository dynamicRecommendationRepository) {
         this.ruleValidationService = ruleValidationService;
@@ -24,6 +27,7 @@ public class DynamicRuleSet implements RecommendationRuleSet {
     @Transactional
     @Override
     public List<RecommendationDTO> getRecommendation(String userId) {
+        logger.info("Processing getRec in DynamicRuleSet");
         return dynamicRecommendationRepository.findAll().stream()
                 .map(recommendation -> processRecommendation(recommendation, userId))
                 .filter(Optional::isPresent)
@@ -32,6 +36,7 @@ public class DynamicRuleSet implements RecommendationRuleSet {
     }
 
     private Optional<RecommendationDTO> processRecommendation(Recommendation recommendation, String userId) {
+        logger.info("Processing each recommendation");
         Boolean isValid = recommendation.getDynamicRules().stream()
                 .map(dynamicRule -> ruleValidationService.evaluateForQuery(dynamicRule, userId))
                 .reduce(true, (a, b) -> a && b);

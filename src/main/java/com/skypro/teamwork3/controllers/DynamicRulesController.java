@@ -1,9 +1,11 @@
 package com.skypro.teamwork3.controllers;
 
+import com.google.gson.JsonObject;
 import com.skypro.teamwork3.dto.RecommendationDTO;
+import com.skypro.teamwork3.dto.StatisticsListDTO;
 import com.skypro.teamwork3.model.Recommendation;
-import com.skypro.teamwork3.model.DynamicRuleStatistics;
 import com.skypro.teamwork3.services.RecommendationService;
+import com.skypro.teamwork3.services.RuleStatisticsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,11 @@ import java.util.List;
 public class DynamicRulesController {
 
     private final RecommendationService recommendationService;
+    private final RuleStatisticsService statisticsService;
 
-    public DynamicRulesController(RecommendationService recommendationService) {
+    public DynamicRulesController(RecommendationService recommendationService, RuleStatisticsService statisticsService) {
         this.recommendationService = recommendationService;
+        this.statisticsService = statisticsService;
     }
 
     @PostMapping
@@ -49,7 +53,7 @@ public class DynamicRulesController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<List<DynamicRuleStatistics>> getRuleStatistics() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StatisticsListDTO> getRuleStatistics() {
+        return ResponseEntity.ok(statisticsService.getAll());
     }
 }
