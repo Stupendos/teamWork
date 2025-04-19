@@ -10,7 +10,7 @@ public class StatisticsListDTO {
 
     public StatisticsListDTO(List<DynamicRuleStatistics> statisticsList) {
         List<StatisticsListElement> stats = new ArrayList<>();
-        statisticsList.stream().forEach(stat->{
+        statisticsList.stream().forEach(stat -> {
             StatisticsListElement element = new StatisticsListElement(stat.getRule().getId(), stat.getTriggerCount());
             stats.add(element);
         });

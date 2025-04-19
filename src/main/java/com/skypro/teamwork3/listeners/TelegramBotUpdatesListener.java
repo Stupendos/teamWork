@@ -26,7 +26,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     TelegramBotService botService;
 
     @PostConstruct
-    public void init(){telegramBot.setUpdatesListener(this);}
+    public void init() {
+        telegramBot.setUpdatesListener(this);
+    }
 
     @Override
     public int process(List<Update> updates) {
@@ -48,8 +50,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     logger.info("equals '/recommend', asking for username");
                     SendMessage sendMessage = new SendMessage(update.message().chat().id(), "Пожалуйста, укажите свой юзернейм при написании команды");
                     telegramBot.execute(sendMessage);
-                }
-                else {
+                } else {
                     logger.info("checks regex for correct form");
                     Pattern pattern = Pattern.compile("/recommend\\s\\S+"); // --- /recommend[space][some letters, numbers or underscores]
                     Matcher matcher = pattern.matcher(msgTxt);

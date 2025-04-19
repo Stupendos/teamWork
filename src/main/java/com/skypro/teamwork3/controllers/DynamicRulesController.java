@@ -37,7 +37,7 @@ public class DynamicRulesController {
     @GetMapping
     public ResponseEntity<List<Recommendation>> getAllRecommendations() {
         List<Recommendation> allRec = recommendationService.getAllRecommendations();
-        if(allRec.isEmpty()) {
+        if (allRec.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(allRec);
@@ -48,7 +48,8 @@ public class DynamicRulesController {
         try {
             recommendationService.deleteRecommendation(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
