@@ -1,7 +1,6 @@
 package com.skypro.teamwork3.services;
 
 import com.skypro.teamwork3.dto.*;
-import com.skypro.teamwork3.exceptions.NoRecommendationFound;
 import com.skypro.teamwork3.exceptions.UsernameDontExistException;
 import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
@@ -16,7 +15,6 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -121,7 +119,7 @@ public class RecommendationService {
             return userId;
         } catch (Exception e) {
             logger.error("User with username: {} not found ", username);
-            throw new UsernameDontExistException("Id search by username failed for: " + username);
+            throw new UsernameDontExistException(username, e);
         }
     }
 
@@ -132,7 +130,7 @@ public class RecommendationService {
             return (user.getFirstName() + " " + user.getLastName());
         } catch (Exception e) {
             logger.error(e.getClass().toString(), e.getMessage());
-            throw new UsernameDontExistException("User search by username failed: " + username);
+            throw new UsernameDontExistException(username, e);
         }
     }
 }

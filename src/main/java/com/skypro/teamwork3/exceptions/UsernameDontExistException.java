@@ -4,15 +4,11 @@ public class UsernameDontExistException extends RuntimeException {
     public UsernameDontExistException() {
     }
 
-    public UsernameDontExistException(String message) {
-        super(message);
+    public UsernameDontExistException(String username) {
+        super("User search by username failed: " + username);
     }
 
-    public UsernameDontExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UsernameDontExistException(Throwable cause) {
-        super(cause);
+    public UsernameDontExistException(String username, Throwable cause) {
+        super("User search by username failed: " + username, cause);
     }
 }

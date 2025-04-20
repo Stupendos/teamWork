@@ -26,6 +26,11 @@ public class TelegramBotService {
             logger.info("Processing recommendations by username...");
             List<RecommendationDTO> recList = recService.getRecommendationsByUsername(username);
             logger.trace("Successful recommendations search.");
+
+            if(recList.isEmpty()) {
+                throw new NoRecommendationFound(username);
+            }
+
             StringBuilder sb = new StringBuilder();
             sb.append("Здравствуйте, ").append(fullName).append("!\r\nРекомендуем Вам следующие продукты:");
             for (RecommendationDTO dto : recList) {

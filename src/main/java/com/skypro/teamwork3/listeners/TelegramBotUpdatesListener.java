@@ -38,11 +38,16 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
+            String msgTxt = update.message() != null ? update.message().text() : null;
+            Long chatId = update.message() != null && update.message().chat() != null ? update.message().chat().id() : null;
+            String userName = update.message() != null && update.message().from() != null ? update.message().from().username() : null;
 
-            logger.info("Processing update: {}", update.message().text());
-            Long chatId = update.message().chat().id();
-            String msgTxt = update.message().text();
-            String userName = update.message().from().username();
+            if (msgTxt == null || chatId == null) {
+                logger.warn("Received update with null text or chatId. Skipping.");
+                return;
+            }
+
+            logger.info("Processing update: {}", msgTxt);
 
             if (msgTxt.equals("/start")) {
                 logger.info("Пользователь [{}] (chatId: {}) отправил команду /start", userName, chatId);
