@@ -1,6 +1,6 @@
 package com.skypro.teamwork3.exceptions;
 
-public class NoRecommendationFound extends Exception {
+public class NoRecommendationFound extends RuntimeException {
     public NoRecommendationFound() {
     }
 

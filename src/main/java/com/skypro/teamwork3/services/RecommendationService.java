@@ -15,7 +15,10 @@ import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -101,26 +104,24 @@ public class RecommendationService {
         }
     }
 
-    public List<RecommendationDTO> getRecommendationsByUsername(String username) throws UsernameDontExistException, NoRecommendationFound {
+    public List<RecommendationDTO> getRecommendationsByUsername(String username) {
         String userId = getUserIdByUsername(username);
-        if (userId.isEmpty()) {
-            throw new UsernameDontExistException("User ID search by username failed.");
-        }
         List<RecommendationDTO> recList = getRecommendations(userId);
+
         if (recList.isEmpty()) {
-            throw new NoRecommendationFound("Search for recommendations for user " + username + " failed.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Search for recommendations for user " + username + " failed.");
         }
         return recList;
     }
 
     private String getUserIdByUsername(String username) throws UsernameDontExistException {
         try {
-            logger.info("Fetching userId by username from the database.");
+            logger.info("Fetching userId by username: {} from the database.", username);
             String userId = defaultRecommendationRepository.getIdByUsername(username);
             return userId;
         } catch (Exception e) {
-            logger.error("Пользователь не найден");
-            throw new UsernameDontExistException("ID search by username failed.");
+            logger.error("User with username: {} not found ", username);
+            throw new UsernameDontExistException("Id search by username failed for: " + username);
         }
     }
 
@@ -130,9 +131,8 @@ public class RecommendationService {
             User user = defaultRecommendationRepository.getAllByUsername(username);
             return (user.getFirstName() + " " + user.getLastName());
         } catch (Exception e) {
-            logger.error(e.getClass().toString());
-            logger.error(e.getMessage());
-            throw new UsernameDontExistException("User search by username failed.");
+            logger.error(e.getClass().toString(), e.getMessage());
+            throw new UsernameDontExistException("User search by username failed: " + username);
         }
     }
 }

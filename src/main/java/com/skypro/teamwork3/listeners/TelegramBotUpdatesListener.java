@@ -18,12 +18,17 @@ import java.util.regex.Pattern;
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
-    Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+    private final TelegramBot telegramBot;
 
-    @Autowired
-    TelegramBot telegramBot;
-    @Autowired
-    TelegramBotService botService;
+    private final TelegramBotService botService;
+
+    private static final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+
+    public TelegramBotUpdatesListener(TelegramBot telegramBot, TelegramBotService botService) {
+        this.telegramBot = telegramBot;
+        this.botService = botService;
+    }
+
 
     @PostConstruct
     public void init() {
@@ -37,37 +42,33 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             logger.info("Processing update: {}", update.message().text());
             Long chatId = update.message().chat().id();
             String msgTxt = update.message().text();
+            String userName = update.message().from().username();
 
             if (msgTxt.equals("/start")) {
-                logger.info("--- /start ---");
-                SendMessage sendMessage = new SendMessage(update.message().chat().id(), "Справка для бота будет здесь");
+                logger.info("Пользователь [{}] (chatId: {}) отправил команду /start", userName, chatId);
+                SendMessage sendMessage = new SendMessage(chatId, "Справка для бота будет здесь");
                 telegramBot.execute(sendMessage);
-            } else if (msgTxt.contains("/recommend")) {
+            } else if (msgTxt.startsWith("/recommend")) {
 
                 logger.info("contains '/recommend'");
 
-                if (msgTxt.equals("/recommend")) {
-                    logger.info("equals '/recommend', asking for username");
+                Pattern pattern = Pattern.compile("/recommend\\s\\S+");
+                Matcher matcher = pattern.matcher(msgTxt);
+
+                if (matcher.matches()) {
+                    logger.info("correct form");
+                    String username = matcher.group(1);
+                    logger.info("search recommendations for username: {}", username);
                     SendMessage sendMessage = new SendMessage(update.message().chat().id(), "Пожалуйста, укажите свой юзернейм при написании команды");
                     telegramBot.execute(sendMessage);
+                } else if (msgTxt.equals("/recommend")) {
+                    logger.info("equals '/recommend', asking for username");
+                    SendMessage sendMessage = new SendMessage(chatId, "Укажите свой юзернейм при написании команды");
+                    telegramBot.execute(sendMessage);
                 } else {
-                    logger.info("checks regex for correct form");
-                    Pattern pattern = Pattern.compile("/recommend\\s\\S+"); // --- /recommend[space][some letters, numbers or underscores]
-                    Matcher matcher = pattern.matcher(msgTxt);
-
-                    if (matcher.matches()) {
-                        logger.info("the form is correct");
-                        String username = msgTxt.substring(11); // --- "/recommend [username]"
-                        username = username.strip();
-                        /*logger.info("attempting to fetch full name");
-                        String userFullName = recommendationService.getFullName(username);*/
-                        logger.info("attempting to find recommendations");
-                        SendMessage sendMessage = new SendMessage(chatId, botService.getRecommendationsByUsername(username));
-                        telegramBot.execute(sendMessage);
-                    } else {
-                        logger.info("form is INCORRECT, sending automated response");
-                        SendMessage sendMessage = new SendMessage(chatId, "Пожалуйста, убедитесь в корректности написания команды. Она должна выглядеть следующим образом:\r/recommend <Insert_Username_Here>");
-                    }
+                    logger.info("form is INCORRECT, sending automated response");
+                    SendMessage sendMessage = new SendMessage(chatId, "Пожалуйста, убедитесь в корректности написания команды. Она должна выглядеть следующим образом:\r/recommend <Insert_Username_Here>");
+                    telegramBot.execute(sendMessage);
                 }
             }
         });
