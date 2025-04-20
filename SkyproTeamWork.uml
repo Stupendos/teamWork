@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>C:/Users/topak/IdeaProjects/SkyproTeamWork</OriginalElement>
+  <nodes>
+    <node x="1260.0" y="734.0">com.skypro.teamwork3.model.QueryType</node>
+    <node x="244.0" y="16.0">com.skypro.teamwork3.jpa.repository.RecommendationByRulesRepository</node>
+    <node x="1058.5" y="3677.5">com.skypro.teamwork3.model.UserTransactionData</node>
+    <node x="1060.5" y="2626.0">com.skypro.teamwork3.configuration.RecommendingTelegramBotConfiguration</node>
+    <node x="879.5" y="4126.0">com.skypro.teamwork3.converter.RecommendationConverter</node>
+    <node x="1146.5" y="1489.5">com.skypro.teamwork3.dto.StatisticsListElement</node>
+    <node x="851.5" y="2153.0">com.skypro.teamwork3.model.DynamicRule</node>
+    <node x="989.0" y="225.5">com.skypro.teamwork3.model.Product</node>
+    <node x="-190.5" y="4114.0">com.skypro.teamwork3.listeners.TelegramBotUpdatesListener</node>
+    <node x="686.5" y="466.0">com.skypro.teamwork3.rulesets.SimpleCreditRule</node>
+    <node x="569.5" y="3677.5">com.skypro.teamwork3.dto.RecommendationResponse</node>
+    <node x="721.0" y="2589.5">com.skypro.teamwork3.dto.ServiceInfo</node>
+    <node x="110.5" y="2601.5">com.skypro.teamwork3.services.RuleStatisticsService</node>
+    <node x="-187.5" y="3486.0">com.skypro.teamwork3.services.TelegramBotService</node>
+    <node x="540.5" y="1829.5">com.skypro.teamwork3.dto.RecommendationDTO</node>
+    <node x="532.5" y="1222.0">com.skypro.teamwork3.configuration.JpaConfig</node>
+    <node x="384.5" y="2177.5">com.skypro.teamwork3.model.RecommendationByRules</node>
+    <node x="860.0" y="2789.5">com.skypro.teamwork3.model.DynamicRuleStatistics</node>
+    <node x="463.5" y="3229.5">com.skypro.teamwork3.controllers.DynamicRulesController</node>
+    <node x="96.0" y="106.0">com.skypro.teamwork3.TeamWorkApplicationTests</node>
+    <node x="759.0" y="1002.0">com.skypro.teamwork3.rulesets.DynamicRuleSet</node>
+    <node x="-42.5" y="-14.0">com.skypro.teamwork3.TeamWorkApplication</node>
+    <node x="527.5" y="733.5">com.skypro.teamwork3.jdbc.repository.RecommendationsRepository</node>
+    <node x="-188.0" y="136.0">com.skypro.teamwork3.jpa.repository.DynamicRuleRepository</node>
+    <node x="1096.0" y="1913.5">com.skypro.teamwork3.dto.StatisticsListDTO</node>
+    <node x="488.5" y="262.5">com.skypro.teamwork3.exceptions.UsernameDontExistException</node>
+    <node x="-45.0" y="2298.5">com.skypro.teamwork3.jpa.repository.DynamicRuleStatisticsRepository</node>
+    <node x="420.0" y="4017.5">com.skypro.teamwork3.dto.RecommendationRequest</node>
+    <node x="878.5" y="3462.5">com.skypro.teamwork3.exceptions.NoRecommendationFound</node>
+    <node x="246.5" y="466.0">com.skypro.teamwork3.rulesets.Invest500</node>
+    <node x="277.0" y="1014.0">com.skypro.teamwork3.configuration.RecommendationsDataSourceConfiguration</node>
+    <node x="232.5" y="3474.0">com.skypro.teamwork3.jdbc.repository.TransactionRepository</node>
+    <node x="26.5" y="298.5">com.skypro.teamwork3.rulesets.RecommendationRuleSet</node>
+    <node x="116.0" y="613.0">com.skypro.teamwork3.model.User</node>
+    <node x="296.0" y="1393.0">com.skypro.teamwork3.model.Recommendation</node>
+    <node x="141.0" y="1913.5">com.skypro.teamwork3.controllers.ManagementController</node>
+    <node x="14.0" y="1233.5">com.skypro.teamwork3.services.ManagementService</node>
+    <node x="-161.0" y="1002.0">com.skypro.teamwork3.jdbc.repository.RecommendationRepository</node>
+    <node x="-36.5" y="3749.5">com.skypro.teamwork3.controllers.RecommendationController</node>
+    <node x="-179.0" y="1556.0">com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository</node>
+    <node x="-193.5" y="466.0">com.skypro.teamwork3.rulesets.TopSavingRule</node>
+    <node x="330.5" y="2838.0">com.skypro.teamwork3.services.RuleValidationService</node>
+    <node x="-178.5" y="2849.5">com.skypro.teamwork3.services.RecommendationService</node>
+    <node x="18.0" y="3181.0">com.skypro.teamwork3.dto.DynamicRuleDTO</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.skypro.teamwork3.controllers.DynamicRulesController" target="com.skypro.teamwork3.services.RecommendationService" relationship="TO_ONE">
+      <point x="0.0" y="80.5" />
+      <point x="748.0" y="3457.0" />
+      <point x="0.5" y="3457.0" />
+      <point x="-47.5" y="80.5" />
+    </edge>
+    <edge source="com.skypro.teamwork3.services.ManagementService" target="com.skypro.teamwork3.jdbc.repository.RecommendationRepository" relationship="TO_ONE">
+      <point x="-220.0" y="-56.5" />
+      <point x="0.0" y="68.0" />
+    </edge>
+    <edge source="com.skypro.teamwork3.model.DynamicRuleStatistics" target="com.skypro.teamwork3.model.DynamicRule" relationship="TO_ONE">
+      <point x="0.0" y="-140.5" />
+      <point x="0.0" y="177.0" />
+    </edge>
+    <edge source="com.skypro.teamwork3.listeners.TelegramBotUpdatesListener" target="com.skypro.teamwork3.services.TelegramBotService" relationship="TO_ONE">
+      <point x="-2.0" y="-56.0" />
+      <point x="-42.0" y="44.0" />
+    </edge>
+    <edge source="com.skypro.teamwork3.controllers.DynamicRulesController" target="com.skypro.teamwork3.services.RuleStatisticsService" relationship="TO_ONE">
+      <point x="0.0" y="-80.5" />
+      <point x="748.0" y="3133.0" />
+      <point x="308.0" y="3133.0" />
+      <point x="0.0" y="68.5" />
+    </edge>
+    <edge source="com.skypro.teamwork3.services.RuleStatisticsService" target="com.skypro.teamwork3.jpa.repository.DynamicRuleStatisticsRepository" relationship="TO_ONE">
+      <point x="-190.0" y="-68.5" />
+      <point x="10.0" y="31.5" />
+    </edge>
+    <edge source="com.skypro.teamwork3.controllers.ManagementController" target="com.skypro.teamwork3.services.ManagementService" relationship="TO_ONE">
+      <point x="-60.0" y="-56.5" />
+      <point x="0.0" y="56.5" />
+    </edge>
+    <edge source="com.skypro.teamwork3.services.TelegramBotService" target="com.skypro.teamwork3.services.RecommendationService" relationship="TO_ONE">
+      <point x="0.0" y="-44.0" />
+      <point x="-12.0" y="3457.0" />
+      <point x="0.5" y="3457.0" />
+      <point x="-47.5" y="80.5" />
+    </edge>
+    <edge source="com.skypro.teamwork3.dto.StatisticsListDTO" target="com.skypro.teamwork3.dto.StatisticsListElement" relationship="TO_MANY">
+      <point x="0.0" y="-56.5" />
+      <point x="0.0" y="80.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.20679366536607757" showDependencies="true" x="652.0" y="2154.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
