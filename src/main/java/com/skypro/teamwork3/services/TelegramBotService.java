@@ -26,6 +26,11 @@ public class TelegramBotService {
             logger.info("Processing recommendations by username...");
             List<RecommendationDTO> recList = recService.getRecommendationsByUsername(username);
             logger.trace("Successful recommendations search.");
+
+            if(recList.isEmpty()) {
+                throw new NoRecommendationFound(username);
+            }
+
             StringBuilder sb = new StringBuilder();
             sb.append("Здравствуйте, ").append(fullName).append("!\r\nРекомендуем Вам следующие продукты:");
             for (RecommendationDTO dto : recList) {
@@ -33,11 +38,11 @@ public class TelegramBotService {
                 sb.append("\r\n").append(dto.getDescription()).append("\r\n");
             }
             return sb.toString();
-        } catch (UsernameDontExistException unde_e) {
-            logger.error(unde_e.getMessage());
+        } catch (UsernameDontExistException usernameDontExistException) {
+            logger.error(usernameDontExistException.getMessage());
             return "Пользователь не найден. Пожалуйста, проверьте корректность написания юзернейма.";
-        } catch (NoRecommendationFound nrf_e) {
-            logger.error(nrf_e.getMessage());
+        } catch (NoRecommendationFound noRecommendationFoundException) {
+            logger.error(noRecommendationFoundException.getMessage());
             return "Похоже, что вы уже владеете всеми подходящими вам продуктами. Благодарим за пользование нашими услугами!";
         }
     }

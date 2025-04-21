@@ -58,4 +58,8 @@ public class DynamicRuleStatistics {
     public void setTriggerCount(int triggerCount) {
         this.triggerCount = triggerCount;
     }
+
+    public void increaseTriggerCount() {
+        this.triggerCount++;
+    }
 }

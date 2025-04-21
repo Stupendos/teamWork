@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class User {
 
-    private String ID;
+    private String id;
     private String username;
     private String firstName;
     private String lastName;
@@ -14,15 +14,15 @@ public class User {
     public User() {
     }
 
-    public User(String ID, String username, String firstName, String lastName) {
-        this.ID = ID;
+    public User(String id, String username, String firstName, String lastName) {
+        this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public String getID() {
-        return ID;
+    public String getid() {
+        return id;
     }
 
     public String getUsername() {
@@ -42,18 +42,18 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(ID, user.ID) && Objects.equals(username, user.username) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ID, username, firstName, lastName);
+        return Objects.hash(id, username, firstName, lastName);
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "ID='" + ID + '\'' +
+                "id='" + id + '\'' +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

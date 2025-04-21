@@ -1,18 +1,12 @@
 package com.skypro.teamwork3.exceptions;
 
-public class NoRecommendationFound extends Exception {
-    public NoRecommendationFound() {
+public class NoRecommendationFound extends RuntimeException {
+
+    public NoRecommendationFound(String username) {
+        super("No recommendation found for " + username);
     }
 
-    public NoRecommendationFound(String message) {
-        super(message);
-    }
-
-    public NoRecommendationFound(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NoRecommendationFound(Throwable cause) {
-        super(cause);
+    public NoRecommendationFound(String username, Throwable cause) {
+        super("No recommendation found for " + username, cause);
     }
 }

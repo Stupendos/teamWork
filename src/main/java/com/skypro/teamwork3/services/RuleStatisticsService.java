@@ -27,7 +27,7 @@ public class RuleStatisticsService {
     public void increase(Long ruleId) {
         DynamicRuleStatistics statistics = repository.findByRuleId(ruleId);
         if (statistics != null) {
-            statistics.setTriggerCount((statistics.getTriggerCount() + 1));
+            statistics.increaseTriggerCount();
             repository.save(statistics);
         }
     }
