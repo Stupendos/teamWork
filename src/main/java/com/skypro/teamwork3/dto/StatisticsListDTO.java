@@ -2,7 +2,6 @@ package com.skypro.teamwork3.dto;
 
 import com.skypro.teamwork3.model.DynamicRuleStatistics;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StatisticsListDTO {
