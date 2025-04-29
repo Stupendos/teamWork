@@ -1,38 +1,52 @@
 package com.skypro.teamwork3.services;
 
 import com.skypro.teamwork3.dto.*;
+import com.skypro.teamwork3.exceptions.UsernameDontExistException;
+import com.skypro.teamwork3.jdbc.repository.RecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRecommendationRepository;
 import com.skypro.teamwork3.jpa.repository.DynamicRuleRepository;
 import com.skypro.teamwork3.model.DynamicRule;
+import com.skypro.teamwork3.model.DynamicRuleStatistics;
 import com.skypro.teamwork3.model.Recommendation;
-import com.skypro.teamwork3.rulesets.DynamicRuleSet;
+import com.skypro.teamwork3.model.User;
 import com.skypro.teamwork3.rulesets.RecommendationRuleSet;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
 @Service
 public class RecommendationService {
+
     private final List<RecommendationRuleSet> ruleSets;
     private final DynamicRecommendationRepository dynamicRecommendationRepository;
-    private final DynamicRuleSet dynamicRuleSet;
     private final DynamicRuleRepository dynamicRuleRepository;
+    private final RecommendationRepository defaultRecommendationRepository;
+    private final RuleStatisticsService statisticsService;
 
+    private final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
     public RecommendationService(List<RecommendationRuleSet> ruleSets,
                                  DynamicRecommendationRepository dynamicRecommendationRepository,
-                                 DynamicRuleSet dynamicRuleSet, DynamicRuleRepository dynamicRuleRepository) {
+                                 DynamicRuleRepository dynamicRuleRepository,
+                                 RecommendationRepository defaultRecommendationRepository, RuleStatisticsService statisticsService) {
         this.ruleSets = ruleSets;
         this.dynamicRecommendationRepository = dynamicRecommendationRepository;
-        this.dynamicRuleSet = dynamicRuleSet;
         this.dynamicRuleRepository = dynamicRuleRepository;
+        this.defaultRecommendationRepository = defaultRecommendationRepository;
+        this.statisticsService = statisticsService;
     }
 
     public List<RecommendationDTO> getRecommendations(String userId) {
+        logger.info("Processing getRecommendations...");
         List<RecommendationDTO> recommendationDTOs = new ArrayList<>();
         for (RecommendationRuleSet ruleSet : ruleSets) {
+            logger.trace("Processing ruleset iteration");
             List<RecommendationDTO> ruleRecommendations = ruleSet.getRecommendation(userId);
             if (!ruleRecommendations.isEmpty()) {
                 recommendationDTOs.addAll(ruleRecommendations);
@@ -49,6 +63,7 @@ public class RecommendationService {
         dynamicRecommendationRepository.save(recommendation);
 
         List<DynamicRule> dynamicRules = new ArrayList<>();
+        List<DynamicRuleStatistics> statisticsList = new ArrayList<>();
         for (DynamicRuleDTO dynamicRuleDTO : recommendationDTO.getDynamicRules()) {
             DynamicRule dynamicRule = new DynamicRule();
             dynamicRule.setQuery(dynamicRuleDTO.getQuery());
@@ -57,10 +72,13 @@ public class RecommendationService {
 
             dynamicRule.setRecommendation(recommendation);
 
-            dynamicRules.add(dynamicRule);
+            DynamicRuleStatistics statistics = new DynamicRuleStatistics(dynamicRule);
 
+            dynamicRules.add(dynamicRule);
+            statisticsList.add(statistics);
         }
         dynamicRuleRepository.saveAll(dynamicRules);
+        statisticsService.createAll(statisticsList);
         recommendation.setDynamicRules(dynamicRules);
         return recommendation;
     }
@@ -81,6 +99,38 @@ public class RecommendationService {
             dynamicRecommendationRepository.delete(recommendation.get());
         } else {
             new RuntimeException("Recommendation with id " + id + " not found");
+        }
+    }
+
+    public List<RecommendationDTO> getRecommendationsByUsername(String username) {
+        String userId = getUserIdByUsername(username);
+        List<RecommendationDTO> recList = getRecommendations(userId);
+
+        if (recList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Search for recommendations for user " + username + " failed.");
+        }
+        return recList;
+    }
+
+    private String getUserIdByUsername(String username) throws UsernameDontExistException {
+        try {
+            logger.info("Fetching userId by username: {} from the database.", username);
+            String userId = defaultRecommendationRepository.getIdByUsername(username);
+            return userId;
+        } catch (Exception e) {
+            logger.error("User with username: {} not found ", username);
+            throw new UsernameDontExistException(username, e);
+        }
+    }
+
+    public String findFullNameByUsername(String username) throws UsernameDontExistException {
+        logger.info("Searching for full name...");
+        try {
+            User user = defaultRecommendationRepository.getAllByUsername(username);
+            return (user.getFirstName() + " " + user.getLastName());
+        } catch (Exception e) {
+            logger.error(e.getClass().toString(), e.getMessage());
+            throw new UsernameDontExistException(username, e);
         }
     }
 }

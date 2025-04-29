@@ -43,21 +43,36 @@ databaseChangeLog:
             constraintName: fk_dynamic_rule_recommendation
             onDelete: CASCADE
 
-#  - changeSet:
-#      id: 3
-#      author: Stupendos
-#      changes:
-#        - createIndex:
-#            tableName: recommendation
-#            indexName: idx_recommendation_id
-#            columns:
-#              - column:
-#                  name: recommendation_id
-#
-#        - createIndex:
-#            tableName: dynamic_rule
-#            indexName: idx_dynamic_rule_recommendation_id
-#            columns:
-#              - column:
-#                  name: recommendation_id
+  - changeSet:
+      id: 3
+      author: Stupendos
+      changes:
+        - createTable:
+            tableName: dynamic_rule_statistics
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: rule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trigger_count
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
 
+        - addForeignKeyConstraint:
+            baseTableName: dynamic_rule_statistics
+            baseColumnNames: rule_id
+            referencedTableName: dynamic_rule
+            referencedColumnNames: id
+            constraintName: fk_dynamic_rule_statistics_rule
+            onDelete: CASCADE
